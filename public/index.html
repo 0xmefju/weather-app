@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌤️ Dashboard Pogodowy</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="logo-icon">🌤️</span>
+        <h1>Weather<br><span class="logo-accent">Dash</span></h1>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="scrollToSection('stations')">
+          <span class="nav-icon">📊</span>
+          <span>Stacje</span>
+        </button>
+        <button class="nav-item" onclick="scrollToSection('charts')">
+          <span class="nav-icon">📈</span>
+          <span>Wykresy</span>
+        </button>
+        <button class="nav-item" onclick="scrollToSection('reports')">
+          <span class="nav-icon">📋</span>
+          <span>Raporty</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-stations">
+        <h3>Szybki wybór</h3>
+        <div id="quickStations" class="quick-list">
+          <!-- Dynamic stations list -->
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="fetchBtn" class="btn-gradient" onclick="fetchWeather()">
+          <span class="btn-icon">🔄</span>
+          Odśwież
+        </button>
+        <span id="fetchStatus" class="status-text"></span>
+        <span id="lastUpdate" class="update-time"></span>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header Section -->
+      <header class="content-header">
+        <div class="header-greeting">
+          <h2>Cześć! 👋</h2>
+          <p>Sprawdź aktualną pogodę z całego świata</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-pill">
+            <span class="stat-icon">📍</span>
+            <span id="stationCount">12 stacji</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-icon">🕐</span>
+            <span>Aktualizacja co 15 min</span>
+          </div>
+          <button class="btn-refresh" onclick="fetchWeather()" id="headerRefreshBtn">
+            <span class="refresh-icon">🔄</span>
+            <span>Odśwież teraz</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Weather Cards Grid -->
+      <section id="stations" class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">🌍</span>
+            Aktualna Pogoda
+          </h2>
+        </div>
+        <div id="weatherCards" class="weather-grid">
+          <!-- Dynamic weather cards -->
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section id="charts" class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">📈</span>
+            Analiza Historyczna
+          </h2>
+        </div>
+        <div class="glass-card">
+          <div class="chart-controls">
+            <div class="control-group">
+              <label>Stacja</label>
+              <select id="stationSelect" class="glass-select">
+                <option value="">Wybierz stację...</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Zakres czasu</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="range" value="24" checked>
+                  <span>24h</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="range" value="48">
+                  <span>48h</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="range" value="168">
+                  <span>7dni</span>
+                </label>
+              </div>
+            </div>
+            <button class="btn-gradient" onclick="loadChart()">Generuj wykres</button>
+          </div>
+          <div class="chart-container">
+            <div id="chartPlaceholder" class="chart-placeholder">
+              <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                <div style="font-size: 1.1rem;">Wybierz stację aby zobaczyć wykres historii pogody</div>
+              </div>
+            </div>
+            <canvas id="weatherChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reports Section -->
+      <section id="reports" class="section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">📋</span>
+            Raporty Pogodowe
+          </h2>
+        </div>
+        <div class="glass-card">
+          <div class="report-controls">
+            <div class="control-group">
+              <label>Stacja</label>
+              <select id="reportStationSelect" class="glass-select">
+                <option value="">Wybierz stację...</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Okres</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="period" value="24h" checked>
+                  <span>24h</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="period" value="7d">
+                  <span>7dni</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="period" value="30d">
+                  <span>30dni</span>
+                </label>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button class="btn-gradient" onclick="loadReport()">Generuj raport</button>
+              <button class="btn-outline" onclick="exportCSV()" id="csvBtn" style="display:none">
+                <span>💾</span> CSV
+              </button>
+            </div>
+          </div>
+          <div id="reportContent" class="report-display"></div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="content-footer">
+        <p>🌤️ Weather Dashboard © 2024 | Dane: Open-Meteo API</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display:none">
+    <div class="loader">
+      <div class="sun"></div>
+      <div class="cloud"></div>
+    </div>
+    <p>Pobieranie danych...</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
